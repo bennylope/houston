@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"sort"
 	"strings"
 )
 
@@ -25,11 +26,20 @@ func plists(dir string) []string {
 
 // Prints a list of all
 func ls() {
+	var plistNames []string
 	for _, dir := range dirs() {
 		for _, file := range plists(dir) {
-			_, filename := filepath.Split(file)
-			fmt.Println(strings.TrimSuffix(filename, filepath.Ext(filename)))
+			if true == false {
+				plistNames = append(plistNames, file)
+			} else {
+				_, filename := filepath.Split(file)
+				plistNames = append(plistNames, strings.TrimSuffix(filename, filepath.Ext(filename)))
+			}
 		}
+	}
+	sort.Strings(plistNames)
+	for _, sortedName := range plistNames {
+		fmt.Println(sortedName)
 	}
 }
 
