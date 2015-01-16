@@ -25,11 +25,11 @@ func plists(dir string) []string {
 }
 
 // Prints a list of all
-func ls() {
+func ls(options []Option) {
 	var plistNames []string
 	for _, dir := range dirs() {
 		for _, file := range plists(dir) {
-			if true == false {
+			if options[3].Value == true {
 				plistNames = append(plistNames, file)
 			} else {
 				_, filename := filepath.Split(file)
@@ -45,18 +45,20 @@ func ls() {
 
 func main() {
 
-	options := make([]Flag, 5)
-	options[0] = Flag{"force", "F", "force", false}
-	options[1] = Flag{"verbose", "v", "verbose", false}
-	options[2] = Flag{"write", "w", "write", false}
-	options[3] = Flag{"long", "l", "long", false}
-	options[4] = Flag{"symlink", "s", "symlink", false}
+	options := make([]Option, 5)
+	options[0] = Option{"force", "F", "force", false}
+	options[1] = Option{"verbose", "v", "verbose", false}
+	options[2] = Option{"write", "w", "write", false}
+	options[3] = Option{"long", "l", "long", false}
+	options[4] = Option{"symlink", "s", "symlink", false}
+
+	ParseOptions(os.Args, options)
 
 	if len(os.Args) < 2 {
 		os.Exit(1)
 	}
 	command := os.Args[1]
 	if command == "ls" {
-		ls()
+		ls(options)
 	}
 }
