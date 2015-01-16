@@ -25,23 +25,28 @@ func plists(dir string) []string {
 }
 
 // Prints a list of all
-func ls(subcommand string, options []Option) {
+func ls(pattern string, options []Option) {
 	var plistNames []string
 	for _, dir := range dirs() {
 		for _, file := range plists(dir) {
+			_, filename := filepath.Split(file)
+			shortName := strings.TrimSuffix(filename, filepath.Ext(filename))
+
+			if strings.Contains(shortName, pattern) != true {
+				continue
+			}
+
+			// Long option is used
 			if options[3].Value == true {
 				plistNames = append(plistNames, file)
 			} else {
-				_, filename := filepath.Split(file)
-				plistNames = append(plistNames, strings.TrimSuffix(filename, filepath.Ext(filename)))
+				plistNames = append(plistNames, shortName)
 			}
 		}
 	}
 	sort.Strings(plistNames)
 	for _, sortedName := range plistNames {
-        if strings.Contains(sortedName, subcommand) {
-            fmt.Println(sortedName)
-        }
+		fmt.Println(sortedName)
 	}
 }
 
@@ -61,15 +66,15 @@ func main() {
 	}
 	command := os.Args[1]
 
-	var subcommand string
+	var pattern string
 
 	if len(os.Args) > 2 {
 		if string(os.Args[2][0]) != "-" {
-			subcommand = os.Args[2]
+			pattern = os.Args[2]
 		}
 	}
 
 	if command == "ls" {
-		ls(subcommand, options)
+		ls(pattern, options)
 	}
 }
