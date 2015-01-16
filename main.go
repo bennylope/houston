@@ -25,7 +25,7 @@ func plists(dir string) []string {
 }
 
 // Prints a list of all
-func ls(options []Option) {
+func ls(subcommand string, options []Option) {
 	var plistNames []string
 	for _, dir := range dirs() {
 		for _, file := range plists(dir) {
@@ -39,7 +39,9 @@ func ls(options []Option) {
 	}
 	sort.Strings(plistNames)
 	for _, sortedName := range plistNames {
-		fmt.Println(sortedName)
+        if strings.Contains(sortedName, subcommand) {
+            fmt.Println(sortedName)
+        }
 	}
 }
 
@@ -58,7 +60,16 @@ func main() {
 		os.Exit(1)
 	}
 	command := os.Args[1]
+
+	var subcommand string
+
+	if len(os.Args) > 2 {
+		if string(os.Args[2][0]) != "-" {
+			subcommand = os.Args[2]
+		}
+	}
+
 	if command == "ls" {
-		ls(options)
+		ls(subcommand, options)
 	}
 }
