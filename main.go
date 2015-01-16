@@ -45,6 +45,13 @@ func ls() {
 
 func main() {
 
+	options := make([]Flag, 5)
+	options[0] = Flag{"force", "F", "force", false}
+	options[1] = Flag{"verbose", "v", "verbose", false}
+	options[2] = Flag{"write", "w", "write", false}
+	options[3] = Flag{"long", "l", "long", false}
+	options[4] = Flag{"symlink", "s", "symlink", false}
+
 	if len(os.Args) < 2 {
 		os.Exit(1)
 	}
