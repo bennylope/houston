@@ -7,6 +7,7 @@ Houston is a port of the popular
 
   - ls [pattern]
   - show [pattern]
+  - edit [pattern]
 
 ### Unsupported commands
 
@@ -16,5 +17,4 @@ Houston is a port of the popular
   - status [pattern]
   - install [file]
   - uninstall [pattern]
-  - edit [pattern]
 

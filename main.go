@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"os/user"
 	"path/filepath"
 	"sort"
@@ -78,6 +79,35 @@ func show(pattern string) {
 	fmt.Println(string(file))
 }
 
+// Allow the user to edit a service's plist file using their editor.
+// Searches for the one match and if found uses the EDITOR defined in the
+// environment to edit the file.
+func edit(pattern string) {
+	fmt.Println(pattern)
+	allServices := getAllServices()
+	result, err := allServices.Get(pattern)
+	if err != nil {
+		fmt.Println("Multiple daemons found matching 'com'. You need to be more specific. Matches found are:")
+		ls(pattern, false)
+		os.Exit(1)
+	}
+	if result.File == "" {
+		os.Exit(0)
+	}
+	editor := os.Getenv("EDITOR")
+	if editor == "" {
+		fmt.Println("EDITOR environment variable is not set")
+		os.Exit(1)
+	}
+	cmd := exec.Command(editor, result.File)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	err = cmd.Run()
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
 func main() {
 
 	options := make([]Option, 5)
@@ -106,5 +136,7 @@ func main() {
 		ls(pattern, options[3].Value)
 	} else if command == "show" {
 		show(pattern)
+	} else if command == "edit" {
+		edit(pattern)
 	}
 }
