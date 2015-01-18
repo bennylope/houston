@@ -1,4 +1,4 @@
-# Houston: help launching services on Mac OS
+# Daemon launch management for Mac OS
 
 Houston is a port of the popular
 [lunchy](https://github.com/eddiezane/lunchy/) program to Go.
