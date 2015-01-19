@@ -110,12 +110,13 @@ func edit(pattern string) {
 
 func main() {
 
-	options := make([]Option, 5)
-	options[0] = Option{"force", "F", "force", false}
-	options[1] = Option{"verbose", "v", "verbose", false}
-	options[2] = Option{"write", "w", "write", false}
-	options[3] = Option{"long", "l", "long", false}
-	options[4] = Option{"symlink", "s", "symlink", false}
+	options := map[string]Option{
+		"force":   Option{"F", "force", false},
+		"verbose": Option{"v", "verbose", false},
+		"write":   Option{"w", "write", false},
+		"long":    Option{"l", "long", false},
+		"symlink": Option{"s", "symlink", false},
+	}
 
 	ParseOptions(os.Args, options)
 
@@ -133,7 +134,7 @@ func main() {
 	}
 
 	if command == "ls" {
-		ls(pattern, options[3].Value)
+		ls(pattern, options["long"].Value)
 	} else if command == "show" {
 		show(pattern)
 	} else if command == "edit" {

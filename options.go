@@ -6,16 +6,20 @@ import "strings"
 // *but* it seemed easier to create the Options using this method - a lot easier
 // - and it should make comparing different flag types simpler, too.
 type Option struct {
-	Name  string // Identifying name
 	Short string // Long command line flag
 	Long  string // Short option-style flag
 	Value bool   // Value even for bool, so a list of possible flags can be set
 	// with values based on whether they're present or not
 }
 
+// Returns a copy of an option
+func (o *Option) copy() Option {
+	return Option{o.Short, o.Long, o.Value}
+}
+
 // Compares the short and long flags in a slice of Options to see if any of the
 // flags were used. If so then the Value for each used flag is toggled to true
-func ParseOptions(args []string, options []Option) {
+func ParseOptions(args []string, options map[string]Option) {
 	var shortOptions []string
 	var longOptions []string
 	for _, arg := range args {
@@ -30,17 +34,24 @@ func ParseOptions(args []string, options []Option) {
 			}
 		}
 	}
-	for i, option := range options {
-		// If you use `_, option` from the range statement and just use the
-		// list item, it won't be set in the original slice.
+	var c Option
+	for k, opt := range options {
 		for _, sOption := range shortOptions {
-			if option.Short == sOption {
-				options[i].Value = true
+			if opt.Short == sOption {
+				// It's not possible to assign a struct value for a struct within a
+				// map, not directly at least. You can have the map be a map of
+				// *pointers* to the struct type, and while that'd be more efficient
+				// and probably more idiomatic, I wanted to try this first.
+				c = opt.copy()
+				c.Value = true
+				options[k] = c
 			}
 		}
 		for _, lOption := range longOptions {
-			if option.Long == lOption {
-				options[i].Value = true
+			if opt.Long == lOption {
+				c = opt.copy()
+				c.Value = true
+				options[k] = c
 			}
 		}
 	}
