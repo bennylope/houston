@@ -37,5 +37,11 @@ func main() {
 		edit(pattern)
 	} else if command == "status" {
 		status(pattern, options["verbose"].Value)
+	} else if command == "start" {
+		start(pattern, options["write"].Value, options["force"].Value)
+	} else if command == "stop" {
+		stop(pattern, options["write"].Value)
+	} else if command == "restart" {
+		restart(pattern, options["write"].Value, options["force"].Value)
 	}
 }

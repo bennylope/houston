@@ -80,3 +80,21 @@ func status(pattern string, verbose bool) {
 	args := []string{"list"}
 	run(cmd, args...)
 }
+
+// Starts a pattern-matched service
+func start(pattern string, write bool, force bool) {
+	fmt.Println("Start", pattern, write, force)
+	fmt.Println("NOT IMPLEMENTED")
+}
+
+// Stops a pattern-matched service
+func stop(pattern string, write bool) {
+	fmt.Println("Stop", pattern, write)
+	fmt.Println("NOT IMPLEMENTED")
+}
+
+// Restarts a pattern-matched service
+func restart(pattern string, write bool, force bool) {
+	stop(pattern, write)
+	start(pattern, write, force)
+}
