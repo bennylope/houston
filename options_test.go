@@ -7,7 +7,14 @@ func TestToggleOptions(t *testing.T) {
 	// It's not possible to assign a struct value for a struct within a
 	// map, not directly at least. You can have the map be a map of
 	// *pointers* to the struct type. Hence the switch to a map of struct
-	// pointers here.
+	// pointers here. Of note is that prior to this switch, the map looked more
+	// like:
+	//
+	// "force": Option{"F", "force", false},
+	//
+	// That was creating Option values, we just want pointers to the Option
+	// structs, so remove the name which [presumably] creates an instance of the
+	// object.
 	options := map[string]*Option{
 		"force":   {"F", "force", false},
 		"verbose": {"v", "verbose", false},
