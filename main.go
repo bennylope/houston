@@ -110,12 +110,12 @@ func edit(pattern string) {
 
 func main() {
 
-	options := map[string]Option{
-		"force":   Option{"F", "force", false},
-		"verbose": Option{"v", "verbose", false},
-		"write":   Option{"w", "write", false},
-		"long":    Option{"l", "long", false},
-		"symlink": Option{"s", "symlink", false},
+	options := map[string]*Option{
+		"force":   {"F", "force", false},
+		"verbose": {"v", "verbose", false},
+		"write":   {"w", "write", false},
+		"long":    {"l", "long", false},
+		"symlink": {"s", "symlink", false},
 	}
 
 	ParseOptions(os.Args, options)

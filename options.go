@@ -13,15 +13,25 @@ type Option struct {
 }
 
 // Returns a copy of an option
+// This was reqired before making the switch to a map of *Option rather than
+// Option, as it's not possible to assign to the value of a struct inside of
+// map. If the values are pointers to structs, then everything is peachy.
+// Instead of switching to pointers first, I just replaced the value with a
+// copy of the struct that was first updated with the appropriate boolean
+// Value.
 func (o *Option) copy() Option {
 	return Option{o.Short, o.Long, o.Value}
 }
 
 // Compares the short and long flags in a slice of Options to see if any of the
 // flags were used. If so then the Value for each used flag is toggled to true
-func ParseOptions(args []string, options map[string]Option) {
+func ParseOptions(args []string, options map[string]*Option) {
+
+	// Slices for aggregating one letter (short) options and double dash full
+	// word options
 	var shortOptions []string
 	var longOptions []string
+
 	for _, arg := range args {
 		if string(arg[0]) != "-" {
 			continue
@@ -34,24 +44,16 @@ func ParseOptions(args []string, options map[string]Option) {
 			}
 		}
 	}
-	var c Option
+
 	for k, opt := range options {
 		for _, sOption := range shortOptions {
 			if opt.Short == sOption {
-				// It's not possible to assign a struct value for a struct within a
-				// map, not directly at least. You can have the map be a map of
-				// *pointers* to the struct type, and while that'd be more efficient
-				// and probably more idiomatic, I wanted to try this first.
-				c = opt.copy()
-				c.Value = true
-				options[k] = c
+				options[k].Value = true
 			}
 		}
 		for _, lOption := range longOptions {
 			if opt.Long == lOption {
-				c = opt.copy()
-				c.Value = true
-				options[k] = c
+				options[k].Value = true
 			}
 		}
 	}
