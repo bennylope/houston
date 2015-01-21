@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"sort"
+	"strings"
 )
 
 // Prints a list of all matching services
@@ -78,6 +79,11 @@ func edit(pattern string) {
 func status(pattern string, verbose bool) {
 	cmd := "launchctl"
 	args := []string{"list"}
+	cmd = strings.Replace(cmd, ".", "\\.", -1) // Escaping unnecessary?
+
+	if pattern != "" {
+		args = append(args, "| /usr/bin/grep -i \""+pattern+"\"")
+	}
 	run(cmd, args...)
 }
 
