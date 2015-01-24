@@ -13,13 +13,13 @@ usage guidance.
   - ls [pattern]
   - show [pattern]
   - edit [pattern]
+  - status [pattern]
 
 ### Unsupported commands
 
   - start [pattern]
   - stop [pattern]
   - restart [pattern]
-  - status [pattern]
   - install [file]
   - uninstall [pattern]
 

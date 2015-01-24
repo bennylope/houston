@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"os/user"
@@ -43,4 +44,60 @@ func run(name string, arg ...string) error {
 	c.Stdout = os.Stdout
 	err := c.Run()
 	return err
+}
+
+// Takes 1 or more commands that are expected to be executed by piping together
+// in a stdout/stdin train.
+func pipeCommands(commands ...exec.Cmd) error {
+	last := len(commands) - 1
+
+	if last == -1 {
+		fmt.Println("Error, no commands sent to pipeCommands function")
+		os.Exit(1)
+	}
+
+	// The caboose always uses os.Stdout
+	commands[last].Stdout = os.Stdout
+
+	// If only one command was provided just run it.
+	if len(commands) == 1 {
+		c := commands[0]
+		err := c.Run()
+		return err
+	}
+
+	// Chain the the output of each command to the input of the subsequent
+	// command.
+	for i, _ := range commands[:last] {
+		out, err := commands[i].StdoutPipe()
+		if err != nil {
+			return err
+		}
+		commands[i+1].Stdin = out
+	}
+
+	// Start all but the first command
+	for i, _ := range commands {
+		if i == 0 {
+			continue
+		}
+		if err := commands[i].Start(); err != nil {
+			return err
+		}
+	}
+
+	// The first command is run (start + wait)
+	commands[0].Run()
+
+	// Wait all but the first command
+	for i, _ := range commands {
+		if i == 0 {
+			continue
+		}
+		if err := commands[i].Wait(); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

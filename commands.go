@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"sort"
-	"strings"
+	//"strings"
 )
 
 // Prints a list of all matching services
@@ -33,7 +34,7 @@ func show(pattern string) {
 	allServices := getAllServices()
 	result, err := allServices.Get(pattern)
 	if err != nil {
-		fmt.Println("Multiple daemons found matching 'com'. You need to be more specific. Matches found are:")
+		fmt.Println("Multiple daemons found matching '" + pattern + "'. You need to be more specific. Matches found are:")
 		ls(pattern, false)
 		os.Exit(1)
 	}
@@ -53,11 +54,10 @@ func show(pattern string) {
 // Searches for the one match and if found uses the EDITOR defined in the
 // environment to edit the file.
 func edit(pattern string) {
-	fmt.Println(pattern)
 	allServices := getAllServices()
 	result, err := allServices.Get(pattern)
 	if err != nil {
-		fmt.Println("Multiple daemons found matching 'com'. You need to be more specific. Matches found are:")
+		fmt.Println("Multiple daemons found matching '" + pattern + "'. You need to be more specific. Matches found are:")
 		ls(pattern, false)
 		os.Exit(1)
 	}
@@ -77,14 +77,11 @@ func edit(pattern string) {
 
 // Provides the status of a pattern-matched service
 func status(pattern string, verbose bool) {
-	cmd := "launchctl"
-	args := []string{"list"}
-	cmd = strings.Replace(cmd, ".", "\\.", -1) // Escaping unnecessary?
-
+	var cmd_list = []exec.Cmd{*exec.Command("launchctl", "list")}
 	if pattern != "" {
-		args = append(args, "| /usr/bin/grep -i \""+pattern+"\"")
+		cmd_list = append(cmd_list, *exec.Command("grep", "-i", pattern))
 	}
-	run(cmd, args...)
+	pipeCommands(cmd_list...)
 }
 
 // Starts a pattern-matched service
