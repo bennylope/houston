@@ -86,14 +86,53 @@ func status(pattern string, verbose bool) {
 
 // Starts a pattern-matched service
 func start(pattern string, write bool, force bool) {
-	fmt.Println("Start", pattern, write, force)
-	fmt.Println("NOT IMPLEMENTED")
+	allServices := getAllServices()
+	result, err := allServices.Get(pattern)
+	if err != nil {
+		fmt.Println("Multiple daemons found matching '" + pattern + "'. You need to be more specific. Matches found are:")
+		ls(pattern, false)
+		os.Exit(1)
+	}
+	var f string
+	if write || force {
+		f = "-"
+	}
+	if write {
+		f = f + "w"
+	}
+	if force {
+		f = f + "F"
+	}
+
+	err = run("launchctl", "load", "-w", result.File)
+	if err != nil {
+		fmt.Println("Error starting", result.Name, "-", err)
+		os.Exit(1)
+	}
+	fmt.Println("started", result.Name)
 }
 
 // Stops a pattern-matched service
 func stop(pattern string, write bool) {
-	fmt.Println("Stop", pattern, write)
-	fmt.Println("NOT IMPLEMENTED")
+	allServices := getAllServices()
+	result, err := allServices.Get(pattern)
+	if err != nil {
+		fmt.Println("Multiple daemons found matching '" + pattern + "'. You need to be more specific. Matches found are:")
+		ls(pattern, false)
+		os.Exit(1)
+	}
+	var f string
+	if write {
+		f = "-w"
+	} else {
+		f = ""
+	}
+	err = run("launchctl", "unload", f, result.File)
+	if err != nil {
+		fmt.Println("Error stopping", result.Name, "-", err)
+		os.Exit(1)
+	}
+	fmt.Println("stopped", result.Name)
 }
 
 // Restarts a pattern-matched service
