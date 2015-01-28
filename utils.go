@@ -14,7 +14,7 @@ import (
 func dirs() []string {
 	// Just using the tilde ~/ does not work!
 	current, _ := user.Current()
-	return []string{"/Library/LaunchAgents", current.HomeDir + "/Library/LaunchAgents"}
+	return []string{current.HomeDir + "/Library/LaunchAgents", "/Library/LaunchAgents"}
 }
 
 // Returns a list of all plist files for a given directory

@@ -10,18 +10,21 @@ usage guidance.
 
 ### Supported commands
 
+Where 'support' means basic support with or without any kind of user
+error handling.
+
   - ls [-l] [pattern]
   - show [pattern]
   - edit [pattern]
   - status [pattern]
+  - install [-s] [file]
+  - uninstall [pattern]
 
 ### Unsupported commands
 
   - start [-wF] [pattern]
   - stop [-w] [pattern]
   - restart [pattern]
-  - install [-s] [file]
-  - uninstall [pattern]
 
 ## Why?
 

@@ -27,9 +27,13 @@ func main() {
 	if len(os.Args) > 2 {
 		if string(os.Args[2][0]) != "-" {
 			pattern = os.Args[2]
+		} else {
+			// TODO catch index error here - not very nice right now
+			pattern = os.Args[3]
 		}
 	}
 
+	// Better way?
 	if command == "list" || command == "ls" {
 		ls(pattern, options["long"].Value)
 	} else if command == "show" {
@@ -50,5 +54,7 @@ func main() {
 		uninstall(pattern)
 	} else {
 		fmt.Println("No such command '", pattern, "'")
+		// TODO show help
+		os.Exit(1)
 	}
 }

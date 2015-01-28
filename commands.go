@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"os/user"
+	"path/filepath"
 	"sort"
 	//"strings"
 )
@@ -144,20 +146,26 @@ func restart(pattern string, write bool, force bool) {
 // Installs a service plist file
 func install(file string, symlink bool) {
 	// TODO check to see if file is installed in one of our dirs first
+	filename := filepath.Base(file)
 	if symlink {
-		err := run("ln", "-s", file, "/tmp/linked.plist")
+		// Might need to go back to to exec.Cmd b/c os.Symlink cannot force a
+		// symlink
+		currentUser, _ := user.Current()
+		target := currentUser.HomeDir + "/Library/LaunchAgents/" + filename
+		err := os.Symlink(file, target)
 		if err != nil {
-			fmt.Println("Error installing symlink:", err)
+			fmt.Println("Error with", file)
+			fmt.Println(err)
 			os.Exit(1)
 		}
 	} else {
-		err := run("cp", file, "/tmp/copied.plist")
+		err := run("cp", file, filename)
 		if err != nil {
 			fmt.Println("Error copying file:", err)
 			os.Exit(1)
 		}
 	}
-	fmt.Println(file, symlink)
+	fmt.Println("Installed", file)
 }
 
 // Removes a service plist file
