@@ -171,9 +171,9 @@ func uninstall(pattern string) {
 		os.Exit(1)
 	}
 	fmt.Println(result.File)
-	err = run("rm", result.File)
+	err = os.Remove(result.File)
 	if err != nil {
-		fmt.Println("Error removing file:", err)
+		fmt.Println("Error!", err)
 		os.Exit(1)
 	}
 	fmt.Println("Uninstalled", pattern)
