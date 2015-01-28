@@ -10,17 +10,17 @@ usage guidance.
 
 ### Supported commands
 
-  - ls [pattern]
+  - ls [-l] [pattern]
   - show [pattern]
   - edit [pattern]
   - status [pattern]
 
 ### Unsupported commands
 
-  - start [pattern]
-  - stop [pattern]
+  - start [-wF] [pattern]
+  - stop [-w] [pattern]
   - restart [pattern]
-  - install [file]
+  - install [-s] [file]
   - uninstall [pattern]
 
 ## Why?
