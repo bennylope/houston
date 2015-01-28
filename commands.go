@@ -140,3 +140,41 @@ func restart(pattern string, write bool, force bool) {
 	stop(pattern, write)
 	start(pattern, write, force)
 }
+
+// Installs a service plist file
+func install(file string, symlink bool) {
+	// TODO check to see if file is installed in one of our dirs first
+	if symlink {
+		err := run("ln", "-s", file, "/tmp/linked.plist")
+		if err != nil {
+			fmt.Println("Error installing symlink:", err)
+			os.Exit(1)
+		}
+	} else {
+		err := run("cp", file, "/tmp/copied.plist")
+		if err != nil {
+			fmt.Println("Error copying file:", err)
+			os.Exit(1)
+		}
+	}
+	fmt.Println(file, symlink)
+}
+
+// Removes a service plist file
+func uninstall(pattern string) {
+	// This code here is being repeated in several places.
+	allServices := getAllServices()
+	result, err := allServices.Get(pattern)
+	if err != nil {
+		fmt.Println("Multiple daemons found matching '" + pattern + "'. You need to be more specific. Matches found are:")
+		ls(pattern, false)
+		os.Exit(1)
+	}
+	fmt.Println(result.File)
+	err = run("rm", result.File)
+	if err != nil {
+		fmt.Println("Error removing file:", err)
+		os.Exit(1)
+	}
+	fmt.Println("Uninstalled", pattern)
+}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 )
 
@@ -29,7 +30,7 @@ func main() {
 		}
 	}
 
-	if command == "ls" {
+	if command == "list" || command == "ls" {
 		ls(pattern, options["long"].Value)
 	} else if command == "show" {
 		show(pattern)
@@ -43,5 +44,11 @@ func main() {
 		stop(pattern, options["write"].Value)
 	} else if command == "restart" {
 		restart(pattern, options["write"].Value, options["force"].Value)
+	} else if command == "install" {
+		install(pattern, options["symlink"].Value)
+	} else if command == "uninstall" || command == "rm" {
+		uninstall(pattern)
+	} else {
+		fmt.Println("No such command '", pattern, "'")
 	}
 }
