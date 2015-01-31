@@ -36,6 +36,17 @@ func getAllServices() Services {
 	return ServicesList
 }
 
+func getOrError(pattern string) Service {
+	allServices := getAllServices()
+	result, err := allServices.Get(pattern)
+	if err != nil {
+		fmt.Println("Multiple daemons found matching '" + pattern + "'. You need to be more specific. Matches found are:")
+		ls(pattern, false)
+		os.Exit(1)
+	}
+	return result
+}
+
 // Wraps the exec.Command function using stdin and stdout so that the command
 // is executed on the user's shell
 func run(name string, arg ...string) error {

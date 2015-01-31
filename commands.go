@@ -33,13 +33,7 @@ func ls(pattern string, long bool) {
 // If no files are matched it outputs nothing. If multiple matches are found it
 // outputs a warning message and lists the daemon file names
 func show(pattern string) {
-	allServices := getAllServices()
-	result, err := allServices.Get(pattern)
-	if err != nil {
-		fmt.Println("Multiple daemons found matching '" + pattern + "'. You need to be more specific. Matches found are:")
-		ls(pattern, false)
-		os.Exit(1)
-	}
+	result := getOrError(pattern)
 	if result.File == "" {
 		os.Exit(0)
 	}
@@ -56,13 +50,7 @@ func show(pattern string) {
 // Searches for the one match and if found uses the EDITOR defined in the
 // environment to edit the file.
 func edit(pattern string) {
-	allServices := getAllServices()
-	result, err := allServices.Get(pattern)
-	if err != nil {
-		fmt.Println("Multiple daemons found matching '" + pattern + "'. You need to be more specific. Matches found are:")
-		ls(pattern, false)
-		os.Exit(1)
-	}
+	result := getOrError(pattern)
 	if result.File == "" {
 		os.Exit(0)
 	}
@@ -71,7 +59,7 @@ func edit(pattern string) {
 		fmt.Println("EDITOR environment variable is not set")
 		os.Exit(1)
 	}
-	err = run(editor, result.File)
+	err := run(editor, result.File)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -88,13 +76,7 @@ func status(pattern string, verbose bool) {
 
 // Starts a pattern-matched service
 func start(pattern string, write bool, force bool) {
-	allServices := getAllServices()
-	result, err := allServices.Get(pattern)
-	if err != nil {
-		fmt.Println("Multiple daemons found matching '" + pattern + "'. You need to be more specific. Matches found are:")
-		ls(pattern, false)
-		os.Exit(1)
-	}
+	result := getOrError(pattern)
 	var f string
 	if write || force {
 		f = "-"
@@ -106,7 +88,7 @@ func start(pattern string, write bool, force bool) {
 		f = f + "F"
 	}
 
-	err = run("launchctl", "load", "-w", result.File)
+	err := run("launchctl", "load", "-w", result.File)
 	if err != nil {
 		fmt.Println("Error starting", result.Name, "-", err)
 		os.Exit(1)
@@ -116,20 +98,14 @@ func start(pattern string, write bool, force bool) {
 
 // Stops a pattern-matched service
 func stop(pattern string, write bool) {
-	allServices := getAllServices()
-	result, err := allServices.Get(pattern)
-	if err != nil {
-		fmt.Println("Multiple daemons found matching '" + pattern + "'. You need to be more specific. Matches found are:")
-		ls(pattern, false)
-		os.Exit(1)
-	}
+	result := getOrError(pattern)
 	var f string
 	if write {
 		f = "-w"
 	} else {
 		f = ""
 	}
-	err = run("launchctl", "unload", f, result.File)
+	err := run("launchctl", "unload", f, result.File)
 	if err != nil {
 		fmt.Println("Error stopping", result.Name, "-", err)
 		os.Exit(1)
@@ -171,15 +147,9 @@ func install(file string, symlink bool) {
 // Removes a service plist file
 func uninstall(pattern string) {
 	// This code here is being repeated in several places.
-	allServices := getAllServices()
-	result, err := allServices.Get(pattern)
-	if err != nil {
-		fmt.Println("Multiple daemons found matching '" + pattern + "'. You need to be more specific. Matches found are:")
-		ls(pattern, false)
-		os.Exit(1)
-	}
+	result := getOrError(pattern)
 	fmt.Println(result.File)
-	err = os.Remove(result.File)
+	err := os.Remove(result.File)
 	if err != nil {
 		fmt.Println("Error!", err)
 		os.Exit(1)
